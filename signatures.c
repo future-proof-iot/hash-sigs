@@ -1,10 +1,5 @@
-/*
- * signatures.c
- *
- *  Created on: Jan 28, 2021
- *      Author: vader
- */
 
+#include <time.h>
 #include "api.h"
 char *default_parm_set = "5/4,5/4";
 //const char *default_parm_set = "20/8,10/8";
@@ -263,9 +258,23 @@ bool do_rand(void *output, size_t len) {
 	} buffer;
 	int i;
 
+	/* Try to grab a sammple of /dev/urandom output */
+	/* We use /dev/urandom because there's no point in blocking; this is a */
+	/* demo program */
+	FILE *f = fopen("/dev/urandom", "r");
+	if (f) {
+		(void) fread(buffer.dev_random_output, 1, 32, f);
+		fclose(f);
+	}
+
+	/* Also try to grab some output from rand */
+	/* It's not great, but if the /dev/urandom output fails, at least we */
+	/* have something */
+	/* In a real program, we'd want to fail if we don't have enough */
+	/* entropy, but hey, this is a demo */
 	static int set_seed = 0;
 	if (!set_seed) {
-                srand();
+		srand(time(0));
 		set_seed = 1;
 	}
 	for (i = 0; i < 16; i++) {
@@ -431,7 +440,7 @@ int sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m,
 	void *aux_data = aux;
 	/* Load the working key into memory */
 	//printf("Loading private key\n");
-	//fflush(stdout);
+	fflush(stdout);
 	struct hss_working_key *w = hss_load_private_key(private_key, /* How to load the */
 	/* private key */
 	0, 0, /* Use minimal memory */
@@ -446,7 +455,7 @@ int sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m,
 	//free(aux_data);
 
 	//printf("Loaded private key\n"); /* printf here mostly so the user */
-	//fflush(stdout); /* gets a feel for how long this step took */
+	fflush(stdout); /* gets a feel for how long this step took */
 	/* compared to the signing steps below */
 
 	/* Now, go through the file list, and generate the signatures for each */
