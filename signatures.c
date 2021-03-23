@@ -348,12 +348,12 @@ int keygen(unsigned char *sk, unsigned char *pk) {
 	} else {
 		aux_len = 1;
 	}
-	unsigned char *aux = malloc(aux_len);
-	if (!aux) {
+	unsigned char aux[CRYPTO_BYTES] = {0};//= malloc(aux_len);
+	//if (!aux) {
 		//printf("error mallocing aux; not generating aux\n");
-		aux_len = 0;
-		aux = 0;
-	}
+	//	aux_len = 0;
+	//	aux = 0;
+	//}
 
 	//printf("Generating public key %s (will take a while)\n",	private_key_filename);
 	if (!hss_generate_private_key(do_rand, /* Routine to generate randomness */
@@ -364,8 +364,8 @@ int keygen(unsigned char *sk, unsigned char *pk) {
 	public_key, len_public_key, /* The public key is placed here */
 	aux_size > 0 ? aux : 0, aux_len, /* Where to place the aux data */
 	0)) { /* Use the defaults for extra info */
-		free(private_key_filename);
-		free(aux);
+	//	free(private_key_filename);
+	//	free(aux);
 		return 0;
 	}
 	//free(private_key_filename);
@@ -379,8 +379,8 @@ int keygen(unsigned char *sk, unsigned char *pk) {
 	 "    This key should not be used for real security\n");
 	 }
 	 */
-	free(aux);
-	free(private_key_filename);
+	//free(aux);
+	//free(private_key_filename);
 
 	return 1;
 }
