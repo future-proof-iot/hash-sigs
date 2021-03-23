@@ -1,6 +1,6 @@
 #include <check.h>
 
-#include "api.h"
+#include "hash_sig_api.h"
 
 #define MESSAGE_SIZE 17
 

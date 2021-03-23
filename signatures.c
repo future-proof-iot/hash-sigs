@@ -1,6 +1,7 @@
 
 #include <time.h>
-#include "api.h"
+
+#include "hash_sig_api.h"
 char *default_parm_set = "5/4,5/4";
 //const char *default_parm_set = "20/8,10/8";
 //const char *default_parm_set = "5/4,5/4";
