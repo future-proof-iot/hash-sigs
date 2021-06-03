@@ -1,6 +1,5 @@
 #include <string.h>
 #include "hash.h"
-#include "sha256.h"
 #include "hss_zeroize.h"
 
 #define ALLOW_VERBOSE 0  /* 1 -> we allow the dumping of intermediate */
@@ -39,9 +38,13 @@ void hss_hash_ctx(void *result, int hash_type, union hash_context *ctx,
 
     switch (hash_type) {
     case HASH_SHA256: {
-        SHA256_Init(&ctx->sha256);
+        /*SHA256_Init(&ctx->sha256);
         SHA256_Update(&ctx->sha256, message, message_len);
-        SHA256_Final(result, &ctx->sha256);
+        SHA256_Final(result, &ctx->sha256);*/
+
+        sha3_256_inc_init(&ctx->sha3);
+        sha3_256_inc_absorb(&ctx->sha3, message, message_len);
+        sha3_256_inc_finalize(result, &ctx->sha3);
 #if ALLOW_VERBOSE
         if (hss_verbose) {
             printf( " ->" );
@@ -69,7 +72,8 @@ void hss_hash(void *result, int hash_type,
 void hss_init_hash_context(int h, union hash_context *ctx) {
     switch (h) {
     case HASH_SHA256:
-        SHA256_Init( &ctx->sha256 );
+        //SHA256_Init( &ctx->sha256 );
+        sha3_256_inc_init(&ctx->sha3);
         break;
     }
 }
@@ -83,7 +87,8 @@ void hss_update_hash_context(int h, union hash_context *ctx,
 #endif
     switch (h) {
     case HASH_SHA256:
-        SHA256_Update(&ctx->sha256, msg, len_msg);
+        //SHA256_Update(&ctx->sha256, msg, len_msg);
+        sha3_256_inc_absorb(&ctx->sha3, msg, len_msg);
         break;
     }
 }
@@ -91,7 +96,8 @@ void hss_update_hash_context(int h, union hash_context *ctx,
 void hss_finalize_hash_context(int h, union hash_context *ctx, void *buffer) {
     switch (h) {
     case HASH_SHA256:
-        SHA256_Final(buffer, &ctx->sha256);
+        //SHA256_Final(buffer, &ctx->sha256);
+        sha3_256_inc_finalize(buffer, &ctx->sha3);
 #if ALLOW_VERBOSE
     if (hss_verbose) {
         printf( " -->" );
