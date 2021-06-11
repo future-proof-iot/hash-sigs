@@ -1,7 +1,6 @@
 #if !defined( HASH_H__ )
 #define HASH_H__
-
-#include "fips202.h"
+#include "sha256.h"
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -19,8 +18,7 @@ enum {
 };
 
 union hash_context {
-    sha3_256incctx sha3;
-
+    SHA256_CTX sha256;
     /* Any other hash contexts would go here */
 };
 
